@@ -2,23 +2,54 @@ import React, { useState, useEffect } from "react";
 import botAvatar from "../assets/AiStein.png";
 import { useSelector } from "react-redux";
 import { MdArrowBack } from "react-icons/md";
+import { FaYoutube, FaWikipediaW, FaFilePdf } from "react-icons/fa";
 
 export default function UpdateWorkspaceModal({ isOpen, onClose }) {
   const userName = useSelector((state) => state.chat.userName);
   const [isTyping, setIsTyping] = useState(true);
 
+  const [formState, setFormState] = useState({
+    type: "pdf",
+    topic: "",
+    title: "",
+    link: "",
+  });
+
   useEffect(() => {
     if (!isOpen) return;
 
     setIsTyping(true);
-    const timer = setTimeout(() => setIsTyping(false), 2000);
+    // Reset form and typing state on modal open
+    setFormState({ type: "pdf", topic: "", title: "", link: "" });
 
+    const timer = setTimeout(() => setIsTyping(false), 2000);
     return () => clearTimeout(timer);
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const goBackText = "No, I want to go back to chatting";
+
+  // Update form field handler
+  const handleChange = (field, value) => {
+    setFormState((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = () => {
+    // For pdf and wikipedia, clear link
+    let payload = { ...formState };
+    if (payload.type !== "youtube") {
+      payload.link = "";
+    }
+    console.log("Submit clicked with data:", payload);
+  };
+
+  // Icon map for source types
+  const iconMap = {
+    pdf: <FaFilePdf className="text-red-600" />,
+    wikipedia: <FaWikipediaW className="text-blue-600" />,
+    youtube: <FaYoutube className="text-red-500" />,
+  };
 
   return (
     <>
@@ -56,13 +87,13 @@ export default function UpdateWorkspaceModal({ isOpen, onClose }) {
                 {/* Left side clickable bubble */}
                 <div
                   onClick={onClose}
-                  className="bg-cyan-500 text-white rounded-lg p-3 mt-6 max-w-xs break-words shadow-md cursor-pointer select-none hover:bg-cyan-600 transition"
+                  className="bg-cyan-500 text-white rounded-lg p-3 mt-6 max-w-xs break-words shadow-md cursor-pointer select-none hover:bg-cyan-600 transition flex items-center gap-2"
                 >
-                    {goBackText} <MdArrowBack/>
+                  <MdArrowBack /> {goBackText}
                 </div>
               </div>
 
-              {/* Right side form + clickable bubble */}
+              {/* Right side form */}
               <div className="flex flex-col w-1/2 pl-6 space-y-3">
                 <label
                   className="mb-2 font-medium text-gray-800"
@@ -74,25 +105,72 @@ export default function UpdateWorkspaceModal({ isOpen, onClose }) {
                   id="topic"
                   type="text"
                   placeholder="Enter topic here"
+                  value={formState.topic}
+                  onChange={(e) => handleChange("topic", e.target.value)}
                   className="mb-4 p-2 border border-gray-300 rounded"
                 />
 
-                <label
-                  className="mb-2 font-medium text-gray-800"
-                  htmlFor="details"
-                >
-                  Source Details
-                </label>
-                <textarea
-                  id="details"
-                  rows={4}
-                  placeholder="Enter details here"
-                  className="p-2 border border-gray-300 rounded resize-none"
-                />
+                <fieldset className="mt-4">
+                  <legend className="font-semibold mb-2 text-gray-800">
+                    Source Type
+                  </legend>
+                  <div className="flex gap-6">
+                    {["pdf", "wikipedia", "youtube"].map((type) => (
+                      <label
+                        key={type}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          name="sourceType"
+                          value={type}
+                          checked={formState.type === type}
+                          onChange={() => handleChange("type", type)}
+                          className="cursor-pointer"
+                        />
+                        <span className="capitalize flex items-center gap-1">
+                          {iconMap[type]}
+                          {type}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+
+                {/* Conditional inputs for YouTube */}
+                {formState.type === "youtube" && (
+                  <>
+                    <input
+                      type="text"
+                      placeholder="Video Title"
+                      value={formState.title}
+                      onChange={(e) => handleChange("title", e.target.value)}
+                      className="mt-4 p-2 border border-gray-300 rounded"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Video Link"
+                      value={formState.link}
+                      onChange={(e) => handleChange("link", e.target.value)}
+                      className="mt-2 p-2 border border-gray-300 rounded"
+                    />
+                  </>
+                )}
+
+                {/* For pdf or wikipedia just one title input */}
+                {(formState.type === "pdf" || formState.type === "wikipedia") && (
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    value={formState.title}
+                    onChange={(e) => handleChange("title", e.target.value)}
+                    className="mt-4 p-2 border border-gray-300 rounded"
+                  />
+                )}
 
                 <button
-                  className="bg-cyan-600 text-white font-semibold py-2 rounded hover:bg-cyan-700 transition"
-                  onClick={() => alert("Submit clicked")}
+                  className="bg-cyan-600 text-white font-semibold py-2 rounded hover:bg-cyan-700 transition mt-6"
+                  onClick={handleSubmit}
                 >
                   Submit
                 </button>
