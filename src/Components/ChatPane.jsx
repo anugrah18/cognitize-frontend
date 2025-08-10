@@ -69,7 +69,7 @@ export default function ChatPane() {
         addMessage({
           id: Date.now() + 1, // slightly different id
           text: data.answer || "Sorry, I couldn't find an answer.",
-          type: "bot-standard",
+          type: data.tool_name? data.tool_name: "bot-default",
           timestamp: new Date().toISOString(),
         })
       );
@@ -114,7 +114,7 @@ export default function ChatPane() {
               type === "user" ? (
                 <UserMessage key={id} text={text} />
               ) : (
-                <BotMessageContainer key={id} text={text} />
+                <BotMessageContainer key={id} text={text} type={type}/>
               )
             )}
             {/* Show "agent is thinking..." message while waiting */}
