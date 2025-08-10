@@ -8,6 +8,7 @@ import botAvatar from "../assets/AiStein.png";
 import { BACKEND_URL } from "../constants";
 import ThinkingIndicator from "./ThinkingIndicator";
 import UpdateWorkspace from "./UpdateWorkspace";
+import UpdateWorkspaceModal from "./UpdateWorkspaceModal";
 
 export default function ChatPane() {
   const messages = useSelector((state) => state.chat.messages);
@@ -16,6 +17,7 @@ export default function ChatPane() {
   const messagesEndRef = useRef(null);
   const didAddWelcome = useRef(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Add welcome bot message if no messages exist yet and userName is set
   useEffect(() => {
@@ -122,21 +124,26 @@ export default function ChatPane() {
             {isThinking && <ThinkingIndicator />}
             <div ref={messagesEndRef} />
           </div>
-        </div>      
+        </div>
         {/* Input and Update Workspace button side-by-side */}
         <div className="border-t border-gray-300 w-full max-w-8xl px-6 py-4 flex items-center gap-3">
           {/* UpdateWorkspace icon-only button */}
-          <UpdateWorkspace
-            onClick={() => {
-              console.log("Update workspace clicked");
-              // add your logic here
-            }}
-          />
+          <UpdateWorkspace onClick={() => setIsModalOpen(true)} />
           {/* Input box takes remaining space */}
           <div className="flex-grow">
             <InputBox onSend={handleSend} />
           </div>
         </div>
+
+        {/* Modal */}
+        <UpdateWorkspaceModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        >
+          {/* Your modal content here */}
+          <p>This is where you can update workspace settings.</p>
+        </UpdateWorkspaceModal>
+        
       </main>
     </div>
   );
