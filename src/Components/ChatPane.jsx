@@ -7,6 +7,7 @@ import BotMessageContainer from "./BotMessageContainer"; // bot messages aligned
 import botAvatar from "../assets/AiStein.png";
 import { BACKEND_URL } from "../constants";
 import ThinkingIndicator from "./ThinkingIndicator";
+import UpdateWorkspace from "./UpdateWorkspace";
 
 export default function ChatPane() {
   const messages = useSelector((state) => state.chat.messages);
@@ -69,7 +70,7 @@ export default function ChatPane() {
         addMessage({
           id: Date.now() + 1, // slightly different id
           text: data.answer || "Sorry, I couldn't find an answer.",
-          type: data.tool_name? data.tool_name: "bot-default",
+          type: data.tool_name ? data.tool_name : "bot-default",
           timestamp: new Date().toISOString(),
         })
       );
@@ -114,18 +115,27 @@ export default function ChatPane() {
               type === "user" ? (
                 <UserMessage key={id} text={text} />
               ) : (
-                <BotMessageContainer key={id} text={text} type={type}/>
+                <BotMessageContainer key={id} text={text} type={type} />
               )
             )}
             {/* Show "agent is thinking..." message while waiting */}
             {isThinking && <ThinkingIndicator />}
             <div ref={messagesEndRef} />
           </div>
-        </div>
-
-        {/* Input box fixed at bottom */}
-        <div className="border-t border-gray-300 w-full max-w-8xl">
-          <InputBox onSend={handleSend} />
+        </div>      
+        {/* Input and Update Workspace button side-by-side */}
+        <div className="border-t border-gray-300 w-full max-w-8xl px-6 py-4 flex items-center gap-3">
+          {/* UpdateWorkspace icon-only button */}
+          <UpdateWorkspace
+            onClick={() => {
+              console.log("Update workspace clicked");
+              // add your logic here
+            }}
+          />
+          {/* Input box takes remaining space */}
+          <div className="flex-grow">
+            <InputBox onSend={handleSend} />
+          </div>
         </div>
       </main>
     </div>
