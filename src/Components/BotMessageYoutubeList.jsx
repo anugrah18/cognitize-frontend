@@ -3,7 +3,7 @@ import { FaYoutube } from "react-icons/fa";
 
 export default function BotMessageYoutubeList({ text, videos = [] }) {
   return (
-    <div className="flex justify-start max-w-xs break-words shadow-sm">
+    <div className="flex justify-start max-w-xs break-words">
       <div className="bg-gray-200 text-gray-900 rounded-lg p-3 flex flex-col gap-4 max-w-full">
         {/* Header with YouTube icon and text */}
         <div className="flex items-center gap-3">
