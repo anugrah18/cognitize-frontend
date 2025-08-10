@@ -27,6 +27,8 @@ export default function ChatPane() {
           id: Date.now(),
           text: `Hi ${userName}, how can I assist you today?`,
           type: "bot-standard",
+          sources: null,
+          videos:null, 
           timestamp: new Date().toISOString(),
         })
       );
@@ -47,6 +49,8 @@ export default function ChatPane() {
         id: Date.now(),
         text: msg,
         type: "user",
+        sources: null,
+        videos:null, 
         timestamp: new Date().toISOString(),
       })
     );
@@ -73,6 +77,8 @@ export default function ChatPane() {
           id: Date.now() + 1, // slightly different id
           text: data.answer || "Sorry, I couldn't find an answer.",
           type: data.tool_name ? data.tool_name : "bot-default",
+          sources : data.sources || null,
+          videos: data.videos || null,
           timestamp: new Date().toISOString(),
         })
       );
@@ -83,6 +89,8 @@ export default function ChatPane() {
           id: Date.now() + 1,
           text: "Oops! Something went wrong.",
           type: "bot-standard",
+          sources: null,
+          videos: null,
           timestamp: new Date().toISOString(),
         })
       );
@@ -113,11 +121,11 @@ export default function ChatPane() {
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto px-6 py-6 w-full max-w-8xl">
           <div className="space-y-4 w-full flex flex-col">
-            {messages.map(({ id, text, type }) =>
+            {messages.map(({ id, text, type ,sources,videos}) =>
               type === "user" ? (
                 <UserMessage key={id} text={text} />
               ) : (
-                <BotMessageContainer key={id} text={text} type={type} />
+                <BotMessageContainer key={id} text={text} type={type} sources={sources} videos ={videos}/>
               )
             )}
             {/* Show "agent is thinking..." message while waiting */}

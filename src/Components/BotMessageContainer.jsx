@@ -1,19 +1,25 @@
 import BotMessageDefault from "./BotMessageDefault";
-import BotMessageDictionary from "./BotMessageDefinition";
+import BotMessageLongInfoScroll from "./BotMessageLongInfoScroll";
 import BotMessageMemory from "./BotMessageMemory";
 import BotMessageMotivate from "./BotMessageMotivation";
 import BotMessagePersonality from "./BotMessagePersonality";
+import BotMessageSearch from "./BotMessageSearch";
 import BotMessageStandard from "./BotMessageStandard";
+import BotMessageYoutubeList from "./BotMessageYoutubeList";
 
-export default function BotMessageContainer({ text, type }) {  
-  
+export default function BotMessageContainer({ text, type, sources, videos }) { 
   switch (type) {
+    case "search_docs":
+      return <BotMessageSearch text={text} sources={sources} />;
+    case "get_youtube_videos":
+      return <BotMessageYoutubeList text={text} videos={videos} />;
     case "personality":
       return <BotMessagePersonality text={text} />;
     case "summarize_memory":
       return <BotMessageMemory text={text} />;
+    case "recommend_topics":
     case "dictionary_lookup":
-      return <BotMessageDictionary text={text} />;
+      return <BotMessageLongInfoScroll text={text} />;
     case "get_motivation":
       return <BotMessageMotivate text={text} />;
     case "bot-standard":

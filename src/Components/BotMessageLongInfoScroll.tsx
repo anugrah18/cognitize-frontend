@@ -1,7 +1,7 @@
 import React from "react";
 import { MdInfo } from "react-icons/md";
 
-export default function BotMessageDictionary({ text }) {
+export default function BotMessageLongInfoScroll({ text }) {
   return (
     <div className="flex justify-start max-w-xs break-words shadow-sm">
       <div className="bg-gray-200 text-gray-900 rounded-lg p-3 flex items-start gap-3">
