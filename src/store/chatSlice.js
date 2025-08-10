@@ -11,6 +11,7 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     addMessage(state, action) {
+      // action.payload should be { text, type, timestamp }
       state.messages.push(action.payload);
     },
     clearMessages(state) {
