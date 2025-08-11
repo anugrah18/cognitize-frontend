@@ -1,4 +1,4 @@
-# AI Workspace Chat Assistant
+# Cognitize Chatbot UI
 
 A React + Vite front-end application providing an immersive AI chat interface with workspace update capabilities.  
 Features include user and bot chat bubbles, dynamic workspace update modal with support for PDF, Wikipedia, and YouTube sources, and asynchronous backend integration.
