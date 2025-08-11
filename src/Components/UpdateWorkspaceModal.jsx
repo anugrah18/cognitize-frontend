@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 import botAvatar from "../assets/AiStein.png";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MdArrowBack } from "react-icons/md";
 import { FaYoutube, FaWikipediaW, FaFilePdf } from "react-icons/fa";
+import { BACKEND_URL } from "../constants";
+import { addMessage } from "../store/chatSlice"; 
 
 export default function UpdateWorkspaceModal({ isOpen, onClose }) {
   const userName = useSelector((state) => state.chat.userName);
   const [isTyping, setIsTyping] = useState(true);
+  const dispatch = useDispatch(); 
 
   const [formState, setFormState] = useState({
     type: "pdf",
@@ -35,13 +38,78 @@ export default function UpdateWorkspaceModal({ isOpen, onClose }) {
     setFormState((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = () => {
-    // For pdf and wikipedia, clear link
-    let payload = { ...formState };
-    if (payload.type !== "youtube") {
-      payload.link = "";
+  const handleSubmit = async () => {
+    const { type, topic, title, link } = formState;
+
+    let prompt = `Update my workspace for ${type} using `;
+
+    switch (type) {
+      case "pdf":
+        prompt += `pdf:::${topic}:::${title}`;
+        break;
+      case "wikipedia":
+        prompt += `wiki:::${topic}:::${title}`;
+        break;
+      case "youtube":
+        prompt += `youtube:::${topic}:::${title}:::${link}`;
+        break;
+      default:
+        prompt = "";
     }
-    console.log("Submit clicked with data:", payload);
+
+    console.log("Custom prompt:", prompt);
+    dispatch(
+        addMessage({
+          id: Date.now(),
+          text: `Update my workspace on topic '${topic}' by adding ${type} content.`,
+          type: "user",
+          sources: null,
+          videos: null,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+    setIsTyping(true);    
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/ask?user_id=${userName}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();      
+
+      dispatch(
+        addMessage({
+          id: Date.now() + 1, // slightly different id
+          text: data.answer || "Sorry couldn't update workspace.",
+          type: data.tool_name ? data.tool_name : "bot-default",
+          sources: data.sources || null,
+          videos: data.videos || null,
+          timestamp: new Date().toISOString(),
+        })
+      );
+
+      onClose(); // Close modal smoothly after dispatch
+    } catch (error) {
+      console.error("Error updating workspace:", error);
+      // Optionally dispatch error message
+      dispatch(
+        addMessage({
+          id: Date.now() + 1,
+          text: "Oops! Something went wrong while updating workspace.",
+          type: "bot-default",
+          timestamp: new Date().toISOString(),
+        })
+      );
+    } finally {
+      setIsTyping(false);
+    }
   };
 
   // Icon map for source types
@@ -158,7 +226,8 @@ export default function UpdateWorkspaceModal({ isOpen, onClose }) {
                 )}
 
                 {/* For pdf or wikipedia just one title input */}
-                {(formState.type === "pdf" || formState.type === "wikipedia") && (
+                {(formState.type === "pdf" ||
+                  formState.type === "wikipedia") && (
                   <input
                     type="text"
                     placeholder="Title"
