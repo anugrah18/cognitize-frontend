@@ -18,7 +18,7 @@ Features include user and bot chat bubbles, dynamic workspace update modal with 
 
 ## Tech Stack
 
-- React 18  
+- React 18+  
 - Vite (fast dev server and build)  
 - Redux Toolkit for state management  
 - Tailwind CSS for styling  
@@ -39,7 +39,7 @@ Features include user and bot chat bubbles, dynamic workspace update modal with 
 
 ```bash
 git clone https://github.com/anugrah18/cognitize-frontend.git
-cd your-directory
+cd cognitize-frontend
 ```
 
 #### 2. Install dependencies:
